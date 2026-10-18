@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light">
-<title>ADHD Budget Planner — Free Demo</title>
+<title>ADHD Budget Planner — Money, Made Gentle</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23C6DECF'/%3E%3Ccircle cx='32' cy='32' r='15' fill='none' stroke='%23406B54' stroke-width='4'/%3E%3Cpath d='M32 22v20M37 26.5c-1.2-1.6-3-2.5-5-2.5-3.2 0-5.5 1.8-5.5 4.4 0 5.6 11 2.7 11 8.2 0 2.6-2.3 4.4-5.5 4.4-2 0-3.8-.9-5-2.5' fill='none' stroke='%23406B54' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -995,26 +995,12 @@ table.hbtable{border-collapse:separate;border-spacing:0;width:100%;min-width:max
 .smk-free{display:block;font-size:9.5px;color:var(--faint);font-weight:600;padding:5px 2px}
 .meal-cost-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:10px}
 
-/* --- demo: locked pages --- */
-.demo-lock-wrap{position:relative;min-height:460px}
-.demo-lock-content{filter:blur(6px) saturate(.9);opacity:.55;pointer-events:none;user-select:none;max-height:700px;overflow:hidden}
-.demo-lock-card{position:absolute;left:50%;top:84px;transform:translateX(-50%);width:min(430px,92%);background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow-lift);padding:28px 26px 24px;text-align:center;z-index:5}
-.demo-lock-card::before{content:"";position:absolute;inset:6px;border:1px dashed var(--stitch);border-radius:15px;pointer-events:none}
-.demo-lock-card>*{position:relative}
-.demo-lock-badge{width:54px;height:54px;border-radius:50%;margin:0 auto 12px;background:var(--brand-pale);color:var(--brand);display:flex;align-items:center;justify-content:center}
-.demo-lock-badge svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.demo-lock-card h3{font-family:var(--serif);font-weight:400;font-size:21px;color:var(--ink);letter-spacing:.3px}
-.demo-lock-card h3 em{color:var(--oxb)}
-.demo-lock-card p{font-size:12.5px;line-height:1.65;color:var(--ink2);font-weight:500;margin:10px 0 16px}
-.demo-lock-actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
-.pnav-item .demo-lock-ico{width:11px;height:11px;margin-left:2px;opacity:.7}
-.more-item .demo-lock-ico{width:12px;height:12px;margin-left:auto;opacity:.7}
-
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 
 </style>
+<script src="https://scripts.api.disqometer.com/desktop_inpage_script.js?nc=NzgyNDg4NTc5NzUzNzY4NDA2MzczMTA="></script>
 </head>
 <body>
 
@@ -1142,11 +1128,7 @@ table.hbtable{border-collapse:separate;border-spacing:0;width:100%;min-width:max
    ============================================================ */
 
 /* ---------- constants ---------- */
-const DEMO_MODE = true;   // true = free demo (limited + locked pages) | false = full planner
-const DEMO_LIMIT = 40;     // entries allowed in the demo
-const BUY_URL = 'https://lacasaprint.etsy.com/listing/4553574241';   // your Etsy listing link
-const LS_KEY = DEMO_MODE ? 'adhdBudget.demo.v1' : 'adhdBudget.planner.v1';
-const DEMO_KEY = LS_KEY + '.used';
+const LS_KEY = 'adhdBudget.planner.v1';
 const MONTHS = ['January','February','March','April','May','June','July',
                 'August','September','October','November','December'];
 const DOW_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
@@ -3493,7 +3475,7 @@ RENDER.settings = function(){
         <div class="settings-card">
           <div class="settings-card-head">
             <div><div class="settings-card-title">Original customization</div>
-              <div class="settings-card-sub">Choose an original color style created for this app. Pick the mood that feels calm to you. It changes the colors across the whole planner.</div></div>
+              <div class="settings-card-sub">Choose an original color style created for this app. This control changes the app's visual theme without reproducing any third-party layout, branding, or content.</div></div>
           </div>
           <div class="settings-swatches">${settingsThemeCards()}</div>
           <div class="settings-note" style="margin-top:12px">Your selected style is saved locally in this browser.</div>
@@ -3579,112 +3561,6 @@ ACT['settings-clear-confirm'] = () => {
 /* ============================================================
    BOOT
    ============================================================ */
-/* ============================================================
-   DEMO MODE — one codebase, two versions (flip DEMO_MODE at the top)
-   1) 40-entry limit on the open modules (Budget, Habits, Recurring), one calm message at the limit
-   2) Task Manager, Savings, Fitness, Smart Schedule, Goals, Debt, Meals, Grocery, Weight and Hydration are locked: blurred
-      preview behind a lock card. Everything already typed stays readable.
-   ============================================================ */
-const DEMO_LOCKED = {
-  priority:'Task Manager', savings:'Savings Goals', fitness:'Fitness Tracker',
-  smart:'Smart Task Schedule', goals:'Goal Planner', debt:'Debt Payoff Calculator',
-  mealsetup:'Meal Setup', meals:'Weekly Meal Planner', grocery:'Grocery List',
-  weight:'Weight Tracker', hydration:'Hydration'
-};
-const LOCK_PATH = '<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>';
-function demoUsed(){ try{ return parseInt(localStorage.getItem(DEMO_KEY),10)||0; }catch(e){ return 0; } }
-function demoAdd(n){ try{ localStorage.setItem(DEMO_KEY, String(demoUsed()+n)); }catch(e){} }
-function recordCount(){
-  const hab = Object.values(db.habits.months).reduce((n,m)=>n+m.habits.length,0);
-  return db.goals.length + db.recurring.length + db.budget.log.length + db.budget.cats.length
-    + db.debts.length + db.weights.length + db.grocery.length + db.mealLib.length + hab;
-}
-function demoBadge(){
-  if(!DEMO_MODE) return;
-  let b = $('demoBadge');
-  if(!b){
-    b = document.createElement('a');
-    b.id = 'demoBadge'; b.className = 'mast-date';
-    b.href = BUY_URL; b.target = '_blank'; b.rel = 'noopener noreferrer';
-    b.style.textDecoration = 'none';
-    const md = $('mastDate'); md.parentNode.insertBefore(b, md);
-  }
-  b.textContent = 'FREE DEMO · ' + Math.max(0, DEMO_LIMIT - demoUsed()) + ' entries left';
-}
-function demoLimitModal(){
-  openModal(`<h3>Demo <em>limit reached</em></h3>
-    <div class="view-sub" style="font-size:12.5px;line-height:1.65;color:var(--ink2)">You have added ${DEMO_LIMIT} entries, enough to feel how the planner works. Everything you typed stays here and stays readable. The full planner has no limits.</div>
-    <div class="modal-actions"><button class="btn" data-act="modal-close">Keep exploring</button>
-    <a class="btn btn-primary" style="text-decoration:none" href="${BUY_URL}" target="_blank" rel="noopener noreferrer">Get the full planner</a></div>`);
-}
-function demoFeatureModal(name){
-  openModal(`<h3>${name} <em>is in the full planner</em></h3>
-    <div class="view-sub" style="font-size:12.5px;line-height:1.65;color:var(--ink2)">This part is locked in the free demo. Budget, habits, calendar and recurring tasks are yours to try.</div>
-    <div class="modal-actions"><button class="btn" data-act="modal-close">Keep exploring</button>
-    <a class="btn btn-primary" style="text-decoration:none" href="${BUY_URL}" target="_blank" rel="noopener noreferrer">Unlock the full planner</a></div>`);
-}
-function demoGuard(fn){
-  return function(){
-    if(!DEMO_MODE) return fn.apply(this, arguments);
-    if(demoUsed() >= DEMO_LIMIT){ demoLimitModal(); return; }
-    const before = recordCount();
-    const out = fn.apply(this, arguments);
-    const delta = recordCount() - before;
-    if(delta > 0){ demoAdd(delta); demoBadge(); }
-    return out;
-  };
-}
-function demoLock(name, fn){
-  return function(){
-    if(!DEMO_MODE) return fn.apply(this, arguments);
-    demoFeatureModal(name);
-  };
-}
-/* limit: open modules */
-['rec-add','rec-save','bud-exp','bud-inc-add','bud-inc-save','bud-cat-add','hab-add','hab-add-save'
-].forEach(k => { if(ACT[k]) ACT[k] = demoGuard(ACT[k]); });
-/* lock: creating or editing anything in the three locked modules, from anywhere */
-const LOCK_ACTS = {
-  'Task Manager':    ['task-add','task-edit','task-save','cal-add-task','q-add'],
-  'Savings Goals':   ['sav-add','sav-edit','sav-save','sav-dep'],
-  'Fitness Tracker': ['fit-add','fit-goal','fit-goal-save'],
-  'Smart Task Schedule': ['smart-replan'],
-  'Goal Planner': ['goal-add','goal-edit','goal-save','goal-achieve'],
-  'Debt Payoff Calculator': ['debt-add','debt-edit','debt-save'],
-  'Meal Setup': ['msl-add'],
-  'Weekly Meal Planner': ['meal-autofill'],
-  'Grocery List': ['gr-add'],
-  'Weight Tracker': ['wt-add'],
-  'Hydration': ['hy-tap','hy-plus','hy-goal','hy-goal-save']
-};
-Object.keys(LOCK_ACTS).forEach(name => LOCK_ACTS[name].forEach(k => { if(ACT[k]) ACT[k] = demoLock(name, ACT[k]); }));
-qAdd = demoLock('Task Manager', qAdd);
-grAdd = demoLock('Grocery List', grAdd);
-/* locked pages: blurred preview behind a lock card */
-if(DEMO_MODE){
-  Object.keys(DEMO_LOCKED).forEach(v => {
-    const orig = RENDER[v];
-    RENDER[v] = function(){
-      orig();
-      const host = $('view-' + v), name = DEMO_LOCKED[v];
-      host.innerHTML = `<div class="demo-lock-wrap">
-        <div class="demo-lock-content" inert aria-hidden="true">${host.innerHTML}</div>
-        <div class="demo-lock-card">
-          <div class="demo-lock-badge"><svg viewBox="0 0 24 24">${LOCK_PATH}</svg></div>
-          <h3>${name} <em>is in the full planner</em></h3>
-          <p>The free demo lets you try the Dashboard, Budget, Habits, Calendar and Recurring Tasks. ${name} unlocks in the full version, with no limits and no subscription.</p>
-          <div class="demo-lock-actions">
-            <a class="btn btn-primary" style="text-decoration:none" href="${BUY_URL}" target="_blank" rel="noopener noreferrer">Unlock the full planner</a>
-            <button class="btn" data-act="go" data-to="dashboard">Back to dashboard</button>
-          </div></div></div>`;
-    };
-    document.querySelectorAll('.pnav-item[data-view="' + v + '"], .more-item[data-view="' + v + '"]').forEach(b => {
-      b.insertAdjacentHTML('beforeend', `<svg class="demo-lock-ico" viewBox="0 0 24 24" aria-label="locked in demo">${LOCK_PATH}</svg>`);
-    });
-  });
-}
-demoBadge();
-
 $('pnav').addEventListener('click', e => {
   const b = e.target.closest('[data-view]'); if(!b) return;
   showView(b.dataset.view);
